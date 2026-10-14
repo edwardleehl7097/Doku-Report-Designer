@@ -85,8 +85,8 @@ export default function App() {
     const editor = editorRef.current;
     if (!editor) return;
     const frameDocument = editor.Canvas.getDocument();
-    const page = frameDocument.querySelector<HTMLElement>('.doc-page');
-    const viewport = editor.getContainer().querySelector<HTMLElement>('.gjs-cv-canvas');
+    const page = frameDocument?.querySelector<HTMLElement>('.doc-page');
+    const viewport = editor.getContainer()?.querySelector<HTMLElement>('.gjs-cv-canvas');
     if (!page || !viewport) {
       reportStatus('Canvas is still loading. Try Fit again in a moment.', 'error');
       return;
@@ -162,7 +162,7 @@ export default function App() {
     editor.on('canvas:zoom', () => setZoom(editor.Canvas.getZoom()));
 
     // Attach DokuEMS metadata after the initial component tree has been parsed.
-    editor.getWrapper().addAttributes({ 'data-doku-document-type': 'Invoice', 'data-doku-engine': 'grapesjs-poc' });
+    editor.getWrapper()?.addAttributes({ 'data-doku-document-type': 'Invoice', 'data-doku-engine': 'grapesjs-poc' });
     suppressUpdates = false;
     setDirty(false);
     reportStatus('Sample Invoice loaded · synthetic data only');
@@ -206,7 +206,7 @@ export default function App() {
         const parsed: unknown = JSON.parse(local);
         if (isValidDraftEnvelope(parsed) && parsed.documentType === nextType) {
           editor.loadProjectData(parsed.projectData as any);
-          editor.getWrapper().addAttributes({ 'data-doku-document-type': nextType, 'data-doku-engine': 'grapesjs-poc' });
+          editor.getWrapper()?.addAttributes({ 'data-doku-document-type': nextType, 'data-doku-engine': 'grapesjs-poc' });
           setDocumentType(nextType);
           setDirty(false);
           reportStatus(`Saved local draft loaded · ${nextType}`, 'success');
@@ -220,7 +220,7 @@ export default function App() {
     const seed = templateSeeds[nextType];
     editor.setComponents(seed.html);
     editor.setStyle(seed.css);
-    editor.getWrapper().addAttributes({ 'data-doku-document-type': nextType, 'data-doku-engine': 'grapesjs-poc' });
+    editor.getWrapper()?.addAttributes({ 'data-doku-document-type': nextType, 'data-doku-engine': 'grapesjs-poc' });
     setDocumentType(nextType);
     setDirty(false);
     reportStatus(`${seed.title} sample loaded · synthetic data only`);
@@ -236,7 +236,7 @@ export default function App() {
     const editor = editorRef.current;
     if (!editor) return;
     try {
-      const envelope = buildDraftEnvelope(documentType, editor.getProjectData(), editor.getHtml(), editor.getCss());
+      const envelope = buildDraftEnvelope(documentType, editor.getProjectData(), editor.getHtml(), editor.getCss() ?? '');
       localStorage.setItem(DRAFT_PREFIX + documentType, JSON.stringify(envelope));
       setDirty(false);
       reportStatus(`Draft saved in this browser · ${currentLabel}`, 'success');
@@ -270,7 +270,7 @@ export default function App() {
     const title = currentLabel;
     const selectedType = documentType;
     const html = editor.getHtml();
-    const css = editor.getCss();
+    const css = editor.getCss() ?? '';
     revokePreviewUrl();
     setPreview({ title, documentType: selectedType });
     setPreviewError('');
@@ -301,7 +301,7 @@ export default function App() {
   const exportProject = () => {
     const editor = editorRef.current;
     if (!editor) return;
-    const envelope = buildDraftEnvelope(documentType, editor.getProjectData(), editor.getHtml(), editor.getCss());
+    const envelope = buildDraftEnvelope(documentType, editor.getProjectData(), editor.getHtml(), editor.getCss() ?? '');
     saveBlob(`dokuems-${documentType.toLowerCase()}-template-poc.json`, JSON.stringify(envelope, null, 2), 'application/json');
     reportStatus('Project JSON exported', 'success');
   };
